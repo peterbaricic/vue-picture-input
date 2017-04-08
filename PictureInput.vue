@@ -193,7 +193,7 @@ export default {
       this.onDragStop()
       this.onFileChange(e)
     },
-    onFileChange (e) {
+    onFileChange (e, emitEvent = true) {
       let files = e.target.files || e.dataTransfer.files
       if (!files.length) {
         return
@@ -223,18 +223,22 @@ export default {
       this.imageSelected = true
       this.image = ''
       if (this.supportsPreview) {
-        this.loadImage(files[0])
+        this.loadImage(files[0], emitEvent)
       } else {
-        this.$emit('change')
+        if (emitEvent) {
+          this.$emit('change')
+        }
       }
     },
-    loadImage (file) {
+    loadImage (file, emitEvent = true) {
       this.getEXIFOrientation(file, orientation => {
         this.setOrientation(orientation)
         let reader = new FileReader()
         reader.onload = e => {
           this.image = e.target.result
-          this.$emit('change')
+          if (emitEvent) {
+            this.$emit('change')
+          }
           this.imageObject = new Image()
           this.imageObject.onload = () => {
             this.drawImage(this.imageObject)
@@ -368,7 +372,7 @@ export default {
         let fileType = fileName.split('.').slice(-1)[0]
         fileType = fileType.replace('jpg', 'jpeg')
         e.target.files[0] = new File([imageBlob], fileName, { type: 'image/' + fileType })
-        this.onFileChange(e)
+        this.onFileChange(e, false)
       })
       .catch(err => {
         console.log('Failed loading prefill image: ' + err.message)
