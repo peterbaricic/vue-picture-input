@@ -96,6 +96,10 @@ export default {
       default: () => {
         return {}
       }
+    },
+    fetchMode: {
+      type: String,
+      default: 'same-origin'
     }
   },
   watch: {
@@ -353,7 +357,7 @@ export default {
       headers.append('Accept', 'image/*')
       fetch(url, {
         method: 'GET',
-        mode: 'same-origin',
+        mode: this.fetchMode,
         headers: headers
       }).then(response => {
         return response.blob()
